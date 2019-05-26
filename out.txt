@@ -1,0 +1,13 @@
+.............tests passed
+┌                                                                                                               ┐
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing Just Black    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing Just Black    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing Just Black Just Black Just Black Just Black    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+│    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing    Nothing │
+└                                                                                                               ┘
