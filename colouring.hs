@@ -22,6 +22,7 @@ data Puzzle = Puzzle {
   upperInfo::[LineInfo]
   }deriving (Show,Read)   
 
+-- co to robi?
 getFieldSGR :: Color -> [SGR]
 getFieldSGR field = [ SetColor Background Vivid field  ]
 
@@ -49,18 +50,18 @@ fillObviousVertical puzzle board = transpose filledVerticaly
     f Nothing (Just b) = Just b
     f (Just a) (Just b) = Just a
 
-isCorrectState :: Puzzle -> Board -> Bool
-isCorrectState puzzle boardM = 
-  (go (leftInfo puzzle) (toLists boardM)) && (go (upperInfo puzzle) (toLists(transpose boardM)))
-    where
-      go [] [] = True
-      go [] a  = False
-      go a  [] = False
-      go (lineInfo:info) (row:board) = (checkRow lineInfo row) && (go info board)
+--isCorrectState :: Puzzle -> Board -> Bool
+--isCorrectState puzzle boardM = 
+--  (go (leftInfo puzzle) (toLists boardM)) && (go (upperInfo puzzle) (toLists(transpose boardM)))
+--    where
+--      go [] [] = True
+--      go [] a  = False
+--      go a  [] = False
+--      go (lineInfo:info) (row:board) = (checkRow lineInfo row) && (go info board)
 
 -- meybe we generato from one side and then chcek on other
-checkRow :: LineInfo -> Row -> Bool
-checkRow (l:lineInfo) row = take (count l) row 
+--checkRow :: LineInfo -> Row -> Bool
+--checkRow (l:lineInfo) row = take (count l) row 
 
 sumLineInfoBlocks :: LineInfo -> Int
 sumLineInfoBlocks lineInfo = go lineInfo 0
@@ -155,3 +156,8 @@ test expect expr =
   if expect == expr
   then putChar '.'
   else putStrLn $ (show expect ++" != "++ show expr)
+  
+-- generator wierszy
+-- sprawdzacz wierszy
+-- sprawdzacz planszy
+-- wydruk planszy 
