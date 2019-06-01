@@ -3,6 +3,7 @@ module Main where
 import System.Console.ANSI as ANSI
 import System.Environment ( getArgs )
 import Data.Matrix
+import PutBoard
 
 type Field = Maybe Color
 type Row = [Field]
@@ -21,15 +22,6 @@ data Puzzle = Puzzle {
   leftInfo::[LineInfo],
   upperInfo::[LineInfo]
   }deriving (Show,Read)   
-
--- co to robi?
-getFieldSGR :: Color -> [SGR]
-getFieldSGR field = [ SetColor Background Vivid field  ]
-
-drawField :: Color -> IO ()
-drawField field = do
-  setSGR $ getFieldSGR field
-  putChar ' '
 
 solve :: Puzzle -> Board
 solve puzzle = solution
@@ -151,6 +143,7 @@ main = do
   line <- readFile (head args)
   let puzzle = read line :: Puzzle 
   putStrLn $ show $ solve puzzle
+  putBoard [[]]
 
 test expect expr = 
   if expect == expr
