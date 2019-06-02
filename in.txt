@@ -12,15 +12,15 @@ Puzzle {width = 10, height = 10,
     [BlockInfo {color = Red, count = 2},BlockInfo {color = Black, count = 2}]
     ],
   upperInfo = [
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 6}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}],
-    [BlockInfo {color = Black, count = 1}]    
+    [BlockInfo {color = Red, count = 1}],
+    [BlockInfo {color = Black, count = 3}, BlockInfo {color = Black, count = 2}],
+    [BlockInfo {color = Black, count = 6}, BlockInfo {color = Blue, count = 1}, BlockInfo {color = Black, count = 1}],
+    [BlockInfo {color = Red, count = 1}, BlockInfo {color = Black, count = 2}, BlockInfo {color = Black, count = 5}],
+    [BlockInfo {color = Red, count = 2}, BlockInfo {color = Black, count = 1}, BlockInfo {color = Black, count = 2}, BlockInfo {color = Black, count = 2}],
+    [BlockInfo {color = Black, count = 4}],
+    [BlockInfo {color = Black, count = 4}],
+    [BlockInfo {color = Black, count = 3}],
+    [BlockInfo {color = Black, count = 3}],
+    [BlockInfo {color = Black, count = 2}]    
     ]
   }
