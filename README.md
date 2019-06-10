@@ -1,13 +1,14 @@
+# necessary modules
 cabal install matrix
-cabal install  ansi-terminal
+cabal install ansi-terminal
+
 # run 
 '''
 ghc --make colouring.hs
 ./colouring  in.txt > out.txt
 '''
 
-colouring terminal
-
+# colouring terminal
 http://hackage.haskell.org/package/ansi-terminal-0.9.1/docs/System-Console-ANSI.html
 
 
