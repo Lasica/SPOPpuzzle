@@ -8,6 +8,7 @@ import Data.Word -- Word64
 import Data.List -- sort
 import Data.Maybe
 import Data.Function (on)
+import PutBoard
 
 type Field = Maybe Color
 type Row = [Field]
@@ -32,14 +33,6 @@ data Puzzle = Puzzle {
   upperInfo::[LineInfo]
   }deriving (Show,Read)   
 
-getFieldSGR :: Color -> [SGR]
-getFieldSGR field = [ SetColor Background Vivid field  ]
-
-drawField :: Color -> IO ()
-drawField field = do
-  setSGR $ getFieldSGR field
-  putChar ' '
-
 -- solve :: Puzzle -> Board?
 solve puzzle = solution
     where
@@ -47,21 +40,28 @@ solve puzzle = solution
 -- policz colorSignature dla kolumn
       initialColorSignature = buildColorSignature (upperInfo puzzle)
 -- zaczynajac od zestawu pustych permutacji ( [] dla kazdego wiersza)
-      initialCombinations = replicate (width puzzle) []
+      initialCombinations = replicate (height puzzle) []
+      rowsOrder = rowOrderByComplexity (height puzzle) (leftInfo puzzle)
       
 -- spermutuj wiersze wg. porzadku by complexity
-      rowsOrder = rowOrderByComplexity (width puzzle) (leftInfo puzzle)
-      let mySort = sortBy (flip compare `on` fst)
-      reversePerm perm = reverse $ map snd $ mySort $ zip perm [0..]
-      flipRows order rows = map snd $ reverse $ mySort (zip order rows)
-      reorderRows order rows = flipRows (reversePerm order) rows
-      originalOrder order rows = flipRows order rows
       
       lineInfo = reorderRows rowsOrder (leftInfo puzzle)
       -- gwarancja ze originalOrder rowsOrder $ reorderRows rowsOrder [1..]  == [1..]
       -- reorderRows z porzadkiem rowsOrder uporzadkuje wg rosnacej mozliwej liczby ulozen wierszy
       
-      --nonConflictingCombination comb row = TODO
+      nonConflictingCombination startcomb row colorState = retval--(nextcomb, updatedColorState)
+        where
+          (bins, gaps) = binGapsOfRow row (width puzzle)
+          nextcomb = nextLinePermutation startcomb bins gaps
+          updatedState = updateState colorState 0 $ buildRowFromGaps nextcomb row
+          where updateState (cc:cs) start (s:ss) | start > (endsAt s) = updateState (c:c) start ss
+                                                 | otherwise = if isNothing updatedColor then Nothing
+                                                    where updatedColor = (countColor (c s) -1 cc) 
+                                                    updatedColor =
+                                                  if (c s) == White then cc else ) : updateState cs start+1 (s:ss)
+            where
+          retval = 0
+          
       -- 1) buildRowFromGaps
       -- 2) dla kazdej komorki z generowanego wiersza poza kolorem bialym przetestuj czy updateColor na colorSignature nie zwroci Nothing
       -- 3) zwroc Nothing jak sie nie udalo albo Just nowa sygnature kolorow
@@ -84,15 +84,26 @@ solve puzzle = solution
 -- spermutuj spowrotem wiersze
 -- sprawdz czy podane rozwiazanie niesprzeczne z sygnatura kolorow (lista pelna zer obecnie) jest rozwiazaniem
 -- jesli nie - kontynuuj dla danego zestawu poczatkowych kombinacji
+puzzle = testPuzzle -- TODO remove do testow
+mySort = sortBy (flip compare `on` fst)
+reversePerm perm = reverse $ map snd $ mySort $ zip perm [0..]
+flipRows order rows = map snd $ reverse $ mySort (zip order rows)
+reorderRows order rows = flipRows (reversePerm order) rows
+originalOrder order rows = flipRows order rows
         
         
 --solution parts:
+binsGapsOfRow row width = (bins, gaps)
+  where 
+    bins = (length row) +1
+    gaps = width - (lineTotalLength row) - (necessaryGaps row)
+  
 rowOrderByComplexity size rowinfo = map snd $ sort (zip [numberOfCombinations size r | r <- rowinfo] [0..])
 
 buildColorSignature rowinfo = [countAllColors 0 r | r<-rowinfo]
   where
     countAllColors x [] = x
-    countAllColors x (r:ri) = countAllColors (fromJust (countColor x (color r) (count r))) ri
+    countAllColors x (r:ri) = countAllColors (fromJust (countColor (color r) (count r) x)) ri
 
 --segmentsValidWithSignature (s:segs)
 
@@ -109,8 +120,8 @@ lineTotalLength (x:xs) = count x + lineTotalLength xs
 lineTotalLength [] = 0
 
 -- for complexity strategy planning and estimating task complexity
-countColor :: Word64 -> Color -> Int -> Maybe Word64
-countColor chash color amount = if withinBounds then Just (chash + shiftedAmount)
+countColor :: Color -> Int -> Word64 -> Maybe Word64
+countColor color amount chash = if withinBounds then Just (chash + shiftedAmount)
                                 else Nothing
                           where
                             withinBounds = colorValue + amount >= 0 && colorValue + amount < 256
@@ -174,12 +185,20 @@ main = do
   test [0,3,0] (nextLinePermutation [1,0,2] 3 3)
   test [] (nextLinePermutation [0,0,3] 3 3)
   test [Segment {c = White, endsAt = 1},Segment {c = Red, endsAt = 3},Segment {c = White, endsAt = 6},Segment {c = Red, endsAt = 9}] (buildRowFromGaps [BlockInfo Red 2, BlockInfo Red 3] [1, 2, 0])
+  test (3, 4) binsGapsOfRow [BlockInfo {color = Black, count = 2},BlockInfo {color = Black, count = 3}] 10
+  -- orders indices of rows by number of combinations possible on that row
+  test [7,4,0,3,6,5,2,8,9,1] rowsOrderByComplexity (width testPuzzle) (leftInfo testPuzzle)
+  test (leftInfo testPuzzle) originalOrder order $ reorderRows order (leftInfo testPuzzle)
+    where order = (rowOrderByComplexity (height testPuzzle) (leftInfo testPuzzle))
+  test Nothing (countColor Black -1 0)
+  test 0 fromJust (countColor 256 Red -1)
+
   putStrLn "tests passed"
 
   args <- getArgs
   line <- readFile (head args)
   let puzzle = read line :: Puzzle 
-  putStrLn $ show $ solve puzzle
+  putBoard [[Blue]]--putStrLn $ show $ solve puzzle
 
 test expect expr = 
   if expect == expr
