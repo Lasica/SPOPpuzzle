@@ -33,22 +33,24 @@ data Puzzle = Puzzle {
   upperInfo::[LineInfo]
   }deriving (Show,Read)   
 
----- solve :: Puzzle -> Board?
---solve puzzle = solution
---    where
----- dla planszy wez wiersze i permutuj je aby uzyskac kolumny
----- policz colorSignature dla kolumn
---      initialColorSignature = buildColorSignature (upperInfo puzzle)
----- zaczynajac od zestawu pustych permutacji ( [] dla kazdego wiersza)
---      initialCombinations = replicate (height puzzle) []
---      rowsOrder = rowOrderByComplexity (height puzzle) (leftInfo puzzle)
---      
----- spermutuj wiersze wg. porzadku by complexity
---      
---      lineInfo = reorderRows rowsOrder (leftInfo puzzle)
---      -- gwarancja ze originalOrder rowsOrder $ reorderRows rowsOrder [1..]  == [1..]
---      -- reorderRows z porzadkiem rowsOrder uporzadkuje wg rosnacej mozliwej liczby ulozen wierszy
---      
+-- solve :: Puzzle -> Board?
+solve puzzle = solution
+    where
+-- dla planszy wez wiersze i permutuj je aby uzyskac kolumny
+-- policz colorSignature dla kolumn
+      initialColorSignature = buildColorSignature (upperInfo puzzle)
+-- zaczynajac od zestawu pustych permutacji ( [] dla kazdego wiersza)
+      initialCombinations = replicate (height puzzle) []
+      rowsOrder = rowOrderByComplexity (height puzzle) (leftInfo puzzle)
+      
+-- spermutuj wiersze wg. porzadku by complexity
+      
+      lineInfo = reorderRows rowsOrder (leftInfo puzzle)
+      placeholder = 0
+      solution = placeholder
+      -- gwarancja ze originalOrder rowsOrder $ reorderRows rowsOrder [1..]  == [1..]
+      -- reorderRows z porzadkiem rowsOrder uporzadkuje wg rosnacej mozliwej liczby ulozen wierszy
+      
 --      nonConflictingCombination startcomb row colorState = retval--(nextcomb, updatedColorState)
 --        where
 --          (bins, gaps) = binGapsOfRow row (width puzzle)
@@ -158,7 +160,13 @@ buildRowFromGaps_ lastColor endAt (f:rlineinfo) (g:rgapinfo) =
 buildRowFromGaps_ lastColor endAt [] (g:rgapinfo) = 
   if g == 0 then []
   else Segment White (endAt+g) : []
-    
+
+basicColorsFromSegments (s:sg) = _basicColorsFromSegments (s:sg) 0 
+  where
+    _basicColorsFromSegments (s:sg) start = if endsAt s == start then (c s) : _basicColorsFromSegments (sg) (start+1)
+                                            else (c s) : _basicColorsFromSegments (s:sg) (start+1) 
+    _basicColorsFromSegments [] _ = [] 
+                                 
 
 nextLinePermutation [] bins gaps = gaps : replicate (bins-1) 0
 nextLinePermutation perm bins gaps = reverse (carryOne (reverse perm) 0) 
@@ -207,13 +215,15 @@ main = do
   args <- getArgs
   --line <- readFile (head args)
   let puzzle = testPuzzle -- read line :: Puzzle 
-  putBoard [[Blue]]--putStrLn $ show $ solve puzzle
+  --putStrLn $ show $ solve puzzle
+  putBoard [basicColorsFromSegments $ buildRowFromGaps a (nextLinePermutation [] (fst b) (snd b)) | (a,b) <- [ (c, (binsGapsOfRow c 10)) | c <- leftInfo testPuzzle]]
 
 test expect expr = 
   if expect == expr
   then putBoard [[Green]]
   else do putBoard [[Red]]
           putStrLn $ (show expect ++" != "++ show expr)
+  --print example
 
   
   
